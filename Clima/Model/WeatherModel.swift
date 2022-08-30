@@ -2,26 +2,39 @@
 //  WeatherModel.swift
 //  Clima
 //
-//  Created by Dmytro on 09.08.2022.
+//  Created by Dmytro on 30.08.2022.
 //  Copyright © 2022 App Brewery. All rights reserved.
 //
 
 import Foundation
 
-
-struct WeatherModel : Decodable {
-    var weather : [Weather]
-    var main : Main
-    var name : String
-}
-
-struct Weather: Decodable {
+struct WeatherModel {
     
-    var id : Int
-    var main : String
-    var icon: String
-}
-
-struct Main :Decodable {
-    var temp : Double
+    let conditionId: Int
+    let cityName: String
+    let temperature: Double
+    
+    var conditionName: String {
+        switch conditionId {
+        case 200...232:
+            return "cloud.bolt"
+        case 300...321:
+            return "cloud.drizzle"
+        case 500...531:
+            return "cloud.rain"
+        case 600...622:
+            return "cloud.snow"
+        case 701...781:
+            return "cloud.fog"
+        case 800 :
+            return "sun.max"
+        default:
+            return "cloud"
+        }
+    }
+    
+    var temperatureString: String {
+        return String(format: "%.1f", temperature)
+    }
+    
 }
