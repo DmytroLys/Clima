@@ -9,7 +9,9 @@
 import UIKit
 
 
-class WeatherViewController: UIViewController, UITextFieldDelegate,WeatherManagerDelegate {
+class WeatherViewController: UIViewController {
+    
+    
     
     
     
@@ -33,6 +35,12 @@ class WeatherViewController: UIViewController, UITextFieldDelegate,WeatherManage
     @IBAction private func searchPressed(_ sender: UIButton) {
         searchTextField.endEditing(true)
     }
+    
+    
+    
+}
+
+extension WeatherViewController : UITextFieldDelegate {
     // MARK: - UITextFieldDelegate methods -
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.endEditing(true)
@@ -54,11 +62,22 @@ class WeatherViewController: UIViewController, UITextFieldDelegate,WeatherManage
         }
         searchTextField.text = ""
     }
-    
-    func didUpdateWeather(weather: WeatherModel) {
-        print(weather.temperatureString)
-    }
+}
 
+extension WeatherViewController: WeatherManagerDelegate {
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
+        DispatchQueue.main.async {
+            self.temperatureLabel.text = weather.temperatureString
+            self.conditionImageView.image = UIImage(systemName: weather.conditionName)
+            self.cityLabel.text = weather.cityName
+        }
+        
+    }
     
+    func didFailWithError(error: Error) {
+        let ac = UIAlertController(title: "Some troubles", message: error.localizedDescription, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "Ok", style: .default))
+        present(ac, animated: true)
+    }
 }
 
