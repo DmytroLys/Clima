@@ -7,12 +7,10 @@
 //
 
 import UIKit
+import CoreLocation
 
 
 class WeatherViewController: UIViewController {
-    
-    
-    
     
     
     // MARK: - IB Outlets -
@@ -22,11 +20,21 @@ class WeatherViewController: UIViewController {
     @IBOutlet private weak var searchTextField: UITextField!
     
     var weatherManager = WeatherManager()
+    let locationManager = CLLocationManager()
+    
+    @IBAction func locationPressed(_ sender: UIButton) {
+        locationManager.requestLocation()
+    }
     
     // MARK: - Life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        locationManager.delegate = self
+
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
+
         weatherManager.delegate = self
         searchTextField.delegate = self
         
@@ -39,9 +47,8 @@ class WeatherViewController: UIViewController {
     
     
 }
-
+// MARK: - UITextFieldDelegate -
 extension WeatherViewController : UITextFieldDelegate {
-    // MARK: - UITextFieldDelegate methods -
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         searchTextField.endEditing(true)
         return true
@@ -64,6 +71,8 @@ extension WeatherViewController : UITextFieldDelegate {
     }
 }
 
+// MARK: - WeatherManagerDelegate -
+
 extension WeatherViewController: WeatherManagerDelegate {
     func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
         DispatchQueue.main.async {
@@ -81,5 +90,26 @@ extension WeatherViewController: WeatherManagerDelegate {
             self.present(ac, animated: true)
         }
     }
+}
+
+extension WeatherViewController :CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            locationManager.stopUpdatingLocation()
+            let lat = location.coordinate.latitude
+            let lon = location.coordinate.longitude
+            print(location)
+            print("=====")
+            print(lat)
+            print(lon)
+            weatherManager.fetchWeater(latitude: lat, longitude: lon)
+            
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+    }
+    
 }
 
