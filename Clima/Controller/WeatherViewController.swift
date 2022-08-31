@@ -75,9 +75,11 @@ extension WeatherViewController: WeatherManagerDelegate {
     }
     
     func didFailWithError(error: Error) {
-        let ac = UIAlertController(title: "Some troubles", message: error.localizedDescription, preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "Ok", style: .default))
-        present(ac, animated: true)
+        DispatchQueue.main.async {
+            let ac = UIAlertController(title: "Some troubles", message: error.localizedDescription, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "Ok", style: .default))
+            self.present(ac, animated: true)
+        }
     }
 }
 
